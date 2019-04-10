@@ -19,7 +19,17 @@ pipeline {
                         sh 'echo $(curl localhost:8080)'
                     }
                 }
-            }   
+            }
+        }
+        stage('Push Docker Image') {
+          when {
+            branch 'master'
+          }
+          steps {
+            withDockerRegistry([ credentialsId: "docker_hub_login", url: "" ]) {
+              sh 'docker push callumandersondocker/train-schedule'
+            }
+          }
         }
     }
 }
