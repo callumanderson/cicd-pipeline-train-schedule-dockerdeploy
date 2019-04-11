@@ -22,14 +22,17 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
-          when {
-            branch 'master'
-          }
-          steps {
-            withDockerRegistry([ credentialsId: "docker_hub_login", url: "" ]) {
-              sh 'docker push callumandersondocker/train-schedule'
+            when {
+                branch 'master'
             }
-          }
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
+                        app.push("${env.BUILD_NUMBER}")
+                        app.push("latest")
+                    }
+                }
+            }
         }
         stage('DeployToProduction') {
             when {
